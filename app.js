@@ -10,6 +10,7 @@ const log4js = require('./logger');
 const log = log4js.getLogger();
 
 let rigState = require('./rigStateData');
+let rigWatchdog = require('./rigWatchdog');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -52,11 +53,14 @@ app.use(function (err, req, res, next) {
 scheduleLoop = () => {
 	rigState.schedulerExecuteCounter++;
 	log.info("scheduler executed times %s",  rigState.schedulerExecuteCounter);
+	rigWatchdog.process();
 };
 
 let schedule = laterCron.parse.recur().every(1).minute();
 let scheduleTimer = laterCron.setInterval(scheduleLoop, schedule);
 
 log.info("app started");
+//todo temp added
+rigWatchdog.process();
 
 module.exports = app;
