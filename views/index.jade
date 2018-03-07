@@ -20,3 +20,6 @@ block content
     div.divRow
         div.divCell Last warning time:
         div.divCell #{rigState.warningStartedTime}
+  - each lowHash, index in rigState.gpuLowHashesCount    
+        div.divCell GPU #{index} low hash count:
+        div.divCell #{lowHash}
