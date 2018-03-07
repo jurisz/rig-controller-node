@@ -6,13 +6,28 @@ const log = log4js.getLogger('rigWatchdog');
 
 let rigWatchdog = {};
 
+const MILIS_IN_MIN = 60 * 1000;
+
 warningProcessor = () => {
 	log.info("Rig went WARNING state");
+	if (rigState.warningStartedTime) {
+		let warningStateMins = Math.round((new Date() - rigState.warningStartedTime) / MILIS_IN_MIN);
+		if (warningStateMins >= rigState.STATE_MINUTES) {
+			log.info("Have warning state for %s mins, need to restart", warningStateMins);
+			rigState.warningStartedTime = undefined;
+			rigState.restartCount++;
+			rigState.restartedTime = new Date();
+			//trigger restart
+		}
+	} else {
+		rigState.warningStateCount++;
+		rigState.warningStartedTime = new Date();
+	}
 };
 
 successProcessor = () => {
 	log.info("Rig state OK");
-	// rigState.success	
+	rigState.stateOk();
 };
 
 let claymoreErrorHandler = () => {
@@ -21,25 +36,24 @@ let claymoreErrorHandler = () => {
 };
 
 let claymoreSuccessHandler = data => {
-	let stateOk = true;
+	let stateOk = false;
 	try {
 		let jsonRpc = JSON.parse(data.toString());
 		let hashRates = jsonRpc.result[3].split(';');
 		if (hashRates.length === rigState.GPU_COUNT) {
-			for (i = 0; i < hashRates.length; i++) {
+			let badHashCount = 0;
+			for (let i = 0; i < hashRates.length; i++) {
 				if (Number(hashRates[i]) < rigState.GPU_LOW_HASH) {
 					rigState.gpuLowHashesCount[i]++;
-					stateOk = false;
+					badHashCount++;
 				}
 			}
-		} else {
-			stateOk = false;
+			if (badHashCount == 0) {
+				stateOk = true;
+			}
 		}
-
 		//by some unknown reason no TEMP:FAN data from api 
-
 	} catch (error) {
-		stateOk = false;
 	}
 
 	if (stateOk) {
@@ -51,8 +65,17 @@ let claymoreSuccessHandler = data => {
 };
 
 rigWatchdog.process = () => {
-	//todo check state, may be restarted? 
+	function isInRestartState() {
+		if (rigState.restartedTime) {
+			return Math.round((new Date() - rigState.restartedTime) / MILIS_IN_MIN) <= rigState.STATE_MINUTES;
+		}
+		return false;
+	}
 
+	if (isInRestartState()) {
+		log.info("In restart mode, lets wait");
+		return;
+	}
 
 	claymoreApi.getRigData(rigState.IP, claymoreSuccessHandler, claymoreErrorHandler);
 

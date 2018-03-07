@@ -13,7 +13,6 @@ let rigState = require('./rigStateData');
 let rigWatchdog = require('./rigWatchdog');
 
 var index = require('./routes/index');
-var users = require('./routes/users');
 
 var app = express();
 
@@ -30,7 +29,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
-app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -52,15 +50,15 @@ app.use(function (err, req, res, next) {
 
 scheduleLoop = () => {
 	rigState.schedulerExecuteCounter++;
-	log.info("scheduler executed times %s",  rigState.schedulerExecuteCounter);
+	log.info("scheduler executed times %s", rigState.schedulerExecuteCounter);
 	rigWatchdog.process();
 };
 
-let schedule = laterCron.parse.recur().every(1).minute();
+let schedule = laterCron.parse.recur().every(rigState.SCHEDULER_RUN_MINUTES).minute();
 let scheduleTimer = laterCron.setInterval(scheduleLoop, schedule);
 
 log.info("app started");
-//todo temp added
-rigWatchdog.process();
+//temp added
+//rigWatchdog.process();
 
 module.exports = app;

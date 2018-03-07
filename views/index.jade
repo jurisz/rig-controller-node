@@ -2,6 +2,21 @@ extends layout
 
 block content
   h1= title
-  p Welcome to first my node server with Express
-  p Scheduler executed times: #{schedulerExecuteCounter}
-  p test #{xxx}
+  p Welcome to rig info panel
+  
+  div.divTable
+    div.divRow
+        div.divCell Scheduler execution count:
+        div.divCell #{schedulerExecuteCounter}
+    div.divRow.odd
+        div.divCell Restart count:
+        div.divCell #{rigState.restartCount}
+    div.divRow
+        div.divCell Last restart time:
+        div.divCell #{rigState.restartedTime}
+    div.divRow.odd
+        div.divCell Warning count:
+        div.divCell #{rigState.warningStateCount}
+    div.divRow
+        div.divCell Last warning time:
+        div.divCell #{rigState.warningStartedTime}

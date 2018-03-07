@@ -1,8 +1,27 @@
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+	padding: 50px;
+	font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
-  color: #00B7FF;
+	color: #00B7FF;
 }
+
+.divTable {
+	display: table;
+	width: auto;
+}
+
+.divRow {
+	display: table-row;
+	/*width: auto;*/
+}
+
+.divCell {
+	display: table-cell;
+	padding: 0.25rem 1rem 0.25rem 1rem;
+}
+
+.odd {
+	background-color: #f9f9f9;
+} 

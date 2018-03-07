@@ -4,11 +4,10 @@ var rigState = require('../rigStateData');
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
-	let x = 1111;
 	res.render('index', {
-		title: 'Sensor server on node.js',
-		schedulerExecuteCounter: rigState.schedulerExecuteCounter, 
-		xxx: x
+		title: 'Mining rig monitoring',
+		schedulerExecuteCounter: rigState.schedulerExecuteCounter,
+		rigState: rigState
 	});
 });
 
