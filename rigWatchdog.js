@@ -3,10 +3,25 @@ let rigState = require('./rigStateData');
 
 const log4js = require('./logger');
 const log = log4js.getLogger('rigWatchdog');
+const rpiGpio = require('rpi-gpio');
 
 let rigWatchdog = {};
 
 const MILIS_IN_MIN = 60 * 1000;
+
+
+restartRig = () => {
+	rpiGpio.setup(rigState.POWER_GPIO_PIN, gpio.DIR_OUT, () => {
+		gpio.write(rigState.POWER_GPIO_PIN, true);
+	});
+
+	//switch off relay after 1 min
+	setTimeout(() => {
+			gpio.write(rigState.POWER_GPIO_PIN, false);
+		},
+		MILIS_IN_MIN
+	);
+};
 
 warningProcessor = () => {
 	log.info("Rig went WARNING state");
@@ -18,6 +33,7 @@ warningProcessor = () => {
 			rigState.restartCount++;
 			rigState.restartedTime = new Date();
 			//trigger restart
+			//restartRig();
 		}
 	} else {
 		rigState.warningStateCount++;

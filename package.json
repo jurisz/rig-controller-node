@@ -15,9 +15,9 @@
     "later": "1.2.0",
     "log4js": "2.5.3",
     "morgan": "~1.8.1",
-    "node-netcat": "^1.4.8",
-    "serve-favicon": "~2.4.2",
-    "node-netcat": "1.4.8"
+    "node-netcat": "1.4.8",
+    "rpi-gpio": "^0.9.1",
+    "serve-favicon": "~2.4.2"
   },
   "devDependencies": {
     "express-livereload": "0.0.24",
