@@ -9,13 +9,27 @@ fs.watch('./', () => {
 
 const PIN = 12;
 
-rpiGpio.setup(PIN, rpiGpio.DIR_OUT, () => {
-	rpiGpio.write(PIN, true);
-});
+pinOn = () => {
+	rpiGpio.setup(PIN, rpiGpio.DIR_OUT, () => {
+		rpiGpio.write(PIN, true);
+	});
+};
 
-//switch off relay after 1 min
-setTimeout(() => {
-		rpiGpio.write(PIN, false);
-	},
-	60 * 1000
-);
+pinOff = () => {
+	rpiGpio.write(PIN, false);
+};
+
+pinOnOffFor1Min = () => {
+	pinOn();
+	setTimeout(() => {
+			pinOff();
+			setTimeout(() => {
+					pinOnOffFor1Min();
+				},
+				60 * 1000);
+		},
+		60 * 1000
+	);
+};
+
+pinOnOffFor1Min();
