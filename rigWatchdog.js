@@ -11,13 +11,13 @@ const MILIS_IN_MIN = 60 * 1000;
 
 
 restartRig = () => {
-	rpiGpio.setup(rigState.POWER_GPIO_PIN, gpio.DIR_OUT, () => {
-		gpio.write(rigState.POWER_GPIO_PIN, true);
+	rpiGpio.setup(rigState.POWER_GPIO_PIN, rpiGpio.DIR_OUT, () => {
+		rpiGpio.write(rigState.POWER_GPIO_PIN, true);
 	});
 
 	//switch off relay after 1 min
 	setTimeout(() => {
-			gpio.write(rigState.POWER_GPIO_PIN, false);
+			rpiGpio.write(rigState.POWER_GPIO_PIN, false);
 		},
 		MILIS_IN_MIN
 	);
