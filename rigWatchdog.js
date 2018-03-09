@@ -9,7 +9,6 @@ let rigWatchdog = {};
 
 const MILIS_IN_MIN = 60 * 1000;
 
-
 restartRig = () => {
 	rpiGpio.setup(rigState.POWER_GPIO_PIN, rpiGpio.DIR_OUT, () => {
 		rpiGpio.write(rigState.POWER_GPIO_PIN, true);
@@ -19,21 +18,26 @@ restartRig = () => {
 	setTimeout(() => {
 			rpiGpio.write(rigState.POWER_GPIO_PIN, false);
 		},
-		MILIS_IN_MIN
+		rigState.POWER_OFF_MINUTES * MILIS_IN_MIN
 	);
 };
 
 warningProcessor = () => {
 	log.info("Rig went WARNING state");
+	if (rigState.schedulerExecuteCounter % 5 === 0) {
+		log.info("TESTING return to ok scenario")
+		rigState.stateOk();
+		return;
+	}
+	
 	if (rigState.warningStartedTime) {
 		let warningStateMins = Math.round((new Date() - rigState.warningStartedTime) / MILIS_IN_MIN);
 		if (warningStateMins >= rigState.STATE_MINUTES) {
 			log.info("Have warning state for %s mins, need to restart", warningStateMins);
-			rigState.warningStartedTime = undefined;
+			rigState.warningStartedTime = null;
 			rigState.restartCount++;
 			rigState.restartedTime = new Date();
-			//trigger restart
-			//restartRig();
+			// restartRig();
 		}
 	} else {
 		rigState.warningStateCount++;
@@ -60,7 +64,7 @@ let claymoreSuccessHandler = data => {
 			let badHashCount = 0;
 			for (let i = 0; i < hashRates.length; i++) {
 				if (Number(hashRates[i]) < rigState.GPU_LOW_HASH) {
-					rigState.gpuLowHashesCount[i]++;
+					rigState.incrementGpuLowHashCount(i);
 					badHashCount++;
 				}
 			}
@@ -83,7 +87,7 @@ let claymoreSuccessHandler = data => {
 rigWatchdog.process = () => {
 	function isInRestartState() {
 		if (rigState.restartedTime) {
-			return Math.round((new Date() - rigState.restartedTime) / MILIS_IN_MIN) <= rigState.STATE_MINUTES;
+			return Math.round((new Date() - rigState.restartedTime) / MILIS_IN_MIN) <= rigState.POWER_OFF_MINUTES * 2;
 		}
 		return false;
 	}

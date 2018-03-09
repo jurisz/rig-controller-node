@@ -5,21 +5,24 @@ block content
   p Welcome to rig info panel
   
   div.divTable
-    div.divRow
-        div.divCell Scheduler execution count:
-        div.divCell #{schedulerExecuteCounter}
-    div.divRow.odd
-        div.divCell Restart count:
-        div.divCell #{rigState.restartCount}
-    div.divRow
-        div.divCell Last restart time:
-        div.divCell #{rigState.restartedTime}
-    div.divRow.odd
-        div.divCell Warning count:
-        div.divCell #{rigState.warningStateCount}
-    div.divRow
-        div.divCell Last warning time:
-        div.divCell #{rigState.warningStartedTime}
-  - each lowHash, index in rigState.gpuLowHashesCount    
-        div.divCell GPU #{index} low hash count:
-        div.divCell #{lowHash}
+        div.divRow
+            div.divCell Scheduler execution count:
+            div.divCell #{schedulerExecuteCounter}
+        div.divRow.odd
+            div.divCell Restart count:
+            div.divCell #{rigState.restartCount}
+        div.divRow
+            div.divCell Last restart time:
+            div.divCell #{rigState.restartedTime}
+        div.divRow.odd
+            div.divCell Warning count:
+            div.divCell #{rigState.warningStateCount}
+        div.divRow
+            div.divCell Last warning time:
+            div.divCell #{rigState.warningStartedTime}
+  div.divTable
+    - each lowHash, index in rigState.gpuLowHashCount
+      - var rowBgCss = index % 2 == 0 ? 'even' : 'odd'
+        div(class="divRow " + rowBgCss) 
+            div.divCell GPU #{index} low hash count:
+            div.divCell #{lowHash}

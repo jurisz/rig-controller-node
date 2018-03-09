@@ -3,24 +3,41 @@ let rigState = {
 	IP: '192.168.2.109',
 	GPU_COUNT: 2,
 	SCHEDULER_RUN_MINUTES: 5,
-	STATE_MINUTES: 15,
 	POWER_GPIO_PIN: 12,
+	STATE_MINUTES: 15,
+	POWER_OFF_MINUTES: 5,
 
 	GPU_HIGH_TEMPERATURE: 72,
 	GPU_LOW_HASH: 27000,
 
-	warningStartedTime: undefined,
-	restartedTime: undefined,
+	warningStartedTime: null,
+	restartedTime: null,
 
 	schedulerExecuteCounter: 0,
-	gpuLowHashesCount: [],
+	gpuLowHashCount: [],
 	warningStateCount: 0,
 	restartCount: 0,
 
 	stateOk: () => {
-		this.warningStartedTime = undefined;
-		this.restartedTime = undefined;
+		rigState.warningStartedTime = null;
+		rigState.restartedTime = null;
+	},
+
+	incrementGpuLowHashCount: gpuId => {
+		if (rigState.gpuLowHashCount[gpuId]) {
+			rigState.gpuLowHashCount[gpuId]++;
+		} else {
+			rigState.gpuLowHashCount[gpuId] = 1;
+		}
+	},
+
+	initGpuLowHashCount: () => {
+		for (let i = 0; i < rigState.GPU_COUNT; i++) {
+			rigState.gpuLowHashCount[i] = 0;
+		}
 	}
 };
+
+rigState.initGpuLowHashCount();
 
 module.exports = rigState;
