@@ -1,6 +1,6 @@
 let rigState = {
 	//how long to wait in waring, or restart state before next action 
-	IP: '192.168.2.109',
+	IP: '192.168.2.129',
 	GPU_COUNT: 2,
 	SCHEDULER_RUN_MINUTES: 5,
 	POWER_GPIO_PIN: 12,
