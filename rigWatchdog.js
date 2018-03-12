@@ -29,7 +29,7 @@ warningProcessor = () => {
 		rigState.stateOk();
 		return;
 	}
-	
+
 	if (rigState.warningStartedTime) {
 		let warningStateMins = Math.round((new Date() - rigState.warningStartedTime) / MILIS_IN_MIN);
 		if (warningStateMins >= rigState.STATE_MINUTES) {
@@ -58,21 +58,36 @@ let claymoreErrorHandler = () => {
 let claymoreSuccessHandler = data => {
 	let stateOk = false;
 	try {
+		let gpuStats = [];
 		let jsonRpc = JSON.parse(data.toString());
 		let hashRates = jsonRpc.result[3].split(';');
 		if (hashRates.length === rigState.GPU_COUNT) {
 			let badHashCount = 0;
 			for (let i = 0; i < hashRates.length; i++) {
-				if (Number(hashRates[i]) < rigState.GPU_LOW_HASH) {
+				let currentHash = Number(hashRates[i]);
+				if (currentHash < rigState.GPU_LOW_HASH) {
 					rigState.incrementGpuLowHashCount(i);
 					badHashCount++;
 				}
+				gpuStats[i] = {hash: currentHash};
 			}
 			if (badHashCount == 0) {
 				stateOk = true;
 			}
+
+			let tempFan = jsonRpc.result[6].split(';');
+			if (tempFan.length === 2 * rigState.GPU_COUNT) {
+				for (let i = 0; i < rigState.GPU_COUNT; i++) {
+					let x = i * 2;
+					gpuStats[i].temp = tempFan[x];
+					gpuStats[i].fan = tempFan[x + 1];
+				}
+			}
+
+			if (gpuStats.length == rigState.GPU_COUNT) {
+				rigState.writeStats(gpuStats);
+			}
 		}
-		//by some unknown reason no TEMP:FAN data from api 
 	} catch (error) {
 	}
 

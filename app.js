@@ -58,7 +58,5 @@ let schedule = laterCron.parse.recur().every(rigState.SCHEDULER_RUN_MINUTES).min
 let scheduleTimer = laterCron.setInterval(scheduleLoop, schedule);
 
 log.info("app started");
-//temp added
-//rigWatchdog.process();
 
 module.exports = app;
