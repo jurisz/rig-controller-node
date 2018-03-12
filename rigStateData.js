@@ -41,14 +41,14 @@ let rigState = {
 			rigState.gpuLowHashCount[i] = 0;
 		}
 	},
-	
+
 	initStatsFile: () => {
 		let file = __dirname + "/" + rigState.STATS_FILE;
 		fs.access(file, (err) => {
 			if (err) {
-				let header = '';
+				let header = 'time';
 				for (let i = 0; i < rigState.GPU_COUNT; i++) {
-					header += 'hash' + i + ',temp'  + i + ',fan' +i + ',';
+					header += ',hash' + i + ',temp' + i + ',fan' + i;
 				}
 				fs.appendFile(file, header, function (err) {
 					if (err) {
@@ -56,20 +56,20 @@ let rigState = {
 					}
 				});
 			}
-			
+
 		});
 	},
-	
+
 	writeStats: gpuStats => {
 		if (gpuStats.length != rigState.GPU_COUNT) {
 			log.error('unexpected data length: %d', gpuStats.length);
 			return;
 		}
-		let line = '';
+		let line = new Date().toISOString();
 		for (let stat of gpuStats) {
-			line += stat.hash + ',' + stat.temp + ',' + stat.fan + ','; 
+			line += ',' + stat.hash + ',' + stat.temp + ',' + stat.fan;
 		}
-		
+
 		let file = __dirname + "/" + rigState.STATS_FILE;
 		fs.appendFile(file, '\n' + line, function (err) {
 			if (err) {
@@ -77,7 +77,7 @@ let rigState = {
 			}
 		});
 	}
-	
+
 };
 
 rigState.initGpuLowHashCount();
