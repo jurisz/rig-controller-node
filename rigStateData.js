@@ -50,7 +50,7 @@ let rigState = {
 				for (let i = 0; i < rigState.GPU_COUNT; i++) {
 					header += ',hash' + i + ',temp' + i + ',fan' + i;
 				}
-				fs.appendFile(file, header, function (err) {
+				fs.appendFile(file, header + '\n', function (err) {
 					if (err) {
 						log.error('error on writing file:' + err);
 					}
@@ -71,7 +71,7 @@ let rigState = {
 		}
 
 		let file = __dirname + "/" + rigState.STATS_FILE;
-		fs.appendFile(file, '\n' + line, function (err) {
+		fs.appendFile(file, line + '\n', function (err) {
 			if (err) {
 				log.error('error on writing file:' + err);
 			}
