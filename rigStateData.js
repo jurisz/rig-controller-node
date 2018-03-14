@@ -15,17 +15,20 @@ let rigState = {
 	GPU_HIGH_TEMPERATURE: 72,
 	GPU_LOW_HASH: 27000,
 
+	warningStateCount: 0,
 	warningStartedTime: null,
+	restartCount: 0,
 	restartedTime: null,
+	softRestartCount: 0,
+	softRestartTime: null,
 
 	schedulerExecuteCounter: 0,
 	gpuLowHashCount: [],
-	warningStateCount: 0,
-	restartCount: 0,
 
 	stateOk: () => {
 		rigState.warningStartedTime = null;
 		rigState.restartedTime = null;
+		rigState.softRestartTime = null;
 	},
 
 	incrementGpuLowHashCount: gpuId => {

@@ -9,12 +9,11 @@ let rigWatchdog = {};
 
 const MILIS_IN_MIN = 60 * 1000;
 
-restartRig = () => {
+hardRestartRig = () => {
 	rpiGpio.setup(rigState.POWER_GPIO_PIN, rpiGpio.DIR_OUT, () => {
 		rpiGpio.write(rigState.POWER_GPIO_PIN, true);
 	});
 
-	//switch off relay after 1 min
 	setTimeout(() => {
 			rpiGpio.write(rigState.POWER_GPIO_PIN, false);
 		},
@@ -22,22 +21,30 @@ restartRig = () => {
 	);
 };
 
-warningProcessor = () => {
+softRestartRig = () => {
+	claymoreApi.softRestartRig(rigState.IP);
+};
+
+warningProcessor = (softRestartPossible) => {
 	log.info("Rig went WARNING state");
-	if (rigState.schedulerExecuteCounter % 5 === 0) {
-		log.info("TESTING return to ok scenario")
-		rigState.stateOk();
-		return;
-	}
 
 	if (rigState.warningStartedTime) {
 		let warningStateMins = Math.round((new Date() - rigState.warningStartedTime) / MILIS_IN_MIN);
 		if (warningStateMins >= rigState.STATE_MINUTES) {
-			log.info("Have warning state for %s mins, need to restart", warningStateMins);
 			rigState.warningStartedTime = null;
-			rigState.restartCount++;
-			rigState.restartedTime = new Date();
-			// restartRig();
+
+			if (rigState.softRestartTime == null && softRestartPossible) {
+				log.info("Have warning state for %s mins, going to make soft restart", warningStateMins);
+				rigState.softRestartTime = new Date();
+				rigState.softRestartCount++;
+				softRestartRig();
+			} else {
+				log.info("Have warning state for %s mins, need to make hard restart", warningStateMins);
+				rigState.softRestartTime = null;
+				rigState.restartCount++;
+				rigState.restartedTime = new Date();
+				// hardRestartRig();
+			}
 		}
 	} else {
 		rigState.warningStateCount++;
@@ -57,8 +64,8 @@ let claymoreErrorHandler = () => {
 
 let claymoreSuccessHandler = data => {
 	let stateOk = false;
+	let gpuStats = [];
 	try {
-		let gpuStats = [];
 		let jsonRpc = JSON.parse(data.toString());
 		let hashRates = jsonRpc.result[3].split(';');
 		if (hashRates.length === rigState.GPU_COUNT) {
@@ -91,10 +98,11 @@ let claymoreSuccessHandler = data => {
 	} catch (error) {
 	}
 
+	let softRestartPossible = gpuStats.length > 0;
 	if (stateOk) {
 		successProcessor();
 	} else {
-		warningProcessor();
+		warningProcessor(softRestartPossible);
 	}
 
 };
@@ -103,6 +111,9 @@ rigWatchdog.process = () => {
 	function isInRestartState() {
 		if (rigState.restartedTime) {
 			return Math.round((new Date() - rigState.restartedTime) / MILIS_IN_MIN) <= rigState.POWER_OFF_MINUTES * 2;
+		}
+		if (rigState.softRestartTime) {
+			return Math.round((new Date() - rigState.softRestartTime) / MILIS_IN_MIN) <= rigState.POWER_OFF_MINUTES * 2;
 		}
 		return false;
 	}
