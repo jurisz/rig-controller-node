@@ -63,6 +63,7 @@ let rigState = {
 		});
 	},
 
+
 	writeStats: gpuStats => {
 		if (gpuStats.length != rigState.GPU_COUNT) {
 			log.error('unexpected data length: %d', gpuStats.length);
@@ -70,7 +71,7 @@ let rigState = {
 		}
 		let line = new Date().toISOString();
 		for (let stat of gpuStats) {
-			line += ',' + stat.hash + ',' + stat.temp + ',' + stat.fan;
+			line += ',' + stat.hash + ',' + stat.temp | '-' + ',' + stat.fan | '-';
 		}
 
 		let file = __dirname + "/" + rigState.STATS_FILE;
