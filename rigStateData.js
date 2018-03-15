@@ -71,7 +71,9 @@ let rigState = {
 		}
 		let line = new Date().toISOString();
 		for (let stat of gpuStats) {
-			line += ',' + stat.hash + ',' + stat.temp | '-' + ',' + stat.fan | '-';
+			let temp = stat.temp | '-';
+			let fan = stat.fan | '-';
+			line += ',' + stat.hash + ',' + temp + ',' + fan;
 		}
 
 		let file = __dirname + "/" + rigState.STATS_FILE;
