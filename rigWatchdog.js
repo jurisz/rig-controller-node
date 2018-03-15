@@ -43,7 +43,7 @@ warningProcessor = (softRestartPossible) => {
 				rigState.softRestartTime = null;
 				rigState.restartCount++;
 				rigState.restartedTime = new Date();
-				// hardRestartRig();
+				hardRestartRig();
 			}
 		}
 	} else {

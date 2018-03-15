@@ -59,10 +59,8 @@ let rigState = {
 					}
 				});
 			}
-
 		});
 	},
-
 
 	writeStats: gpuStats => {
 		if (gpuStats.length != rigState.GPU_COUNT) {
@@ -83,7 +81,6 @@ let rigState = {
 			}
 		});
 	}
-
 };
 
 rigState.initGpuLowHashCount();
