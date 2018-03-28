@@ -11,6 +11,7 @@ const log = log4js.getLogger();
 
 let rigState = require('./rigStateData');
 let rigWatchdog = require('./rigWatchdog');
+let fanController = require('./fanController');
 
 var index = require('./routes/index');
 
@@ -52,6 +53,7 @@ scheduleLoop = () => {
 	rigState.schedulerExecuteCounter++;
 	log.info("scheduler executed times %s", rigState.schedulerExecuteCounter);
 	rigWatchdog.process();
+	//fanController.process();
 };
 
 let schedule = laterCron.parse.recur().every(rigState.SCHEDULER_RUN_MINUTES).minute();
