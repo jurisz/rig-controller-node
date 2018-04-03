@@ -7,6 +7,25 @@ a {
 	color: #00B7FF;
 }
 
+h2 {
+	margin-top: 3rem;
+}
+
+table {
+	border-spacing: 0;
+	border-collapse: collapse;
+}
+
+th {
+	min-width: 8rem;
+}
+
+td {
+	border-top: 1px solid #ddd;
+	padding: 0.5rem;
+	vertical-align: top;
+}
+
 .divTable {
 	display: table;
 	width: auto;

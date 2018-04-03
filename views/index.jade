@@ -32,3 +32,13 @@ block content
         div(class="divRow " + rowBgCss) 
             div.divCell GPU #{index} low hash count:
             div.divCell #{lowHash}
+            
+  h2 Last 20 messages
+  table
+    tr
+        th Time
+        th Message
+    - each info in rigState.infoMessages
+      tr     
+        td #{info.time.toISOString()}
+        td #{info.message}

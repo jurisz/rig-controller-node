@@ -5,7 +5,9 @@ const log4js = require('./logger');
 const log = log4js.getLogger('rigWatchdog');
 const rpiGpio = require('rpi-gpio');
 
-let rigWatchdog = {};
+let rigWatchdog = {
+	currentGpuStats: []
+};
 
 const MILIS_IN_MIN = 60 * 1000;
 
@@ -37,18 +39,21 @@ warningProcessor = (softRestartPossible) => {
 				log.info("Have warning state for %s mins, going to make soft restart", warningStateMins);
 				rigState.softRestartTime = new Date();
 				rigState.softRestartCount++;
+				rigState.addLogMessage("soft restart", rigWatchdog.gpuStats);
 				softRestartRig();
 			} else {
 				log.info("Have warning state for %s mins, need to make hard restart", warningStateMins);
 				rigState.softRestartTime = null;
 				rigState.restartCount++;
 				rigState.restartedTime = new Date();
+				rigState.addLogMessage("hard restart", rigWatchdog.gpuStats);
 				hardRestartRig();
 			}
 		}
 	} else {
 		rigState.warningStateCount++;
 		rigState.warningStartedTime = new Date();
+		rigState.addLogMessage("warning state", rigWatchdog.gpuStats);
 	}
 };
 
@@ -65,6 +70,7 @@ let claymoreErrorHandler = () => {
 let claymoreSuccessHandler = data => {
 	let stateOk = false;
 	let gpuStats = [];
+	rigWatchdog.currentGpuStats = [];
 	try {
 		let jsonRpc = JSON.parse(data.toString());
 		let hashRates = jsonRpc.result[3].split(';');
@@ -93,6 +99,7 @@ let claymoreSuccessHandler = data => {
 
 			if (gpuStats.length == rigState.GPU_COUNT) {
 				rigState.writeStats(gpuStats);
+				rigWatchdog.gpuStats = gpuStats;
 			}
 		}
 	} catch (error) {

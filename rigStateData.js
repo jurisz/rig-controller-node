@@ -28,6 +28,7 @@ let rigState = {
 
 	schedulerExecuteCounter: 0,
 	gpuLowHashCount: [],
+	infoMessages: [],
 
 	stateOk: () => {
 		rigState.warningStartedTime = null;
@@ -84,6 +85,14 @@ let rigState = {
 				log.error('error on writing file:' + err);
 			}
 		});
+	},
+
+	addLogMessage: (message, gpuStats) => {
+		if (rigState.infoMessages.length > 30) {
+			rigState.infoMessages.pop();
+		}
+		let msg = message + ' ' + JSON.stringify(gpuStats);
+		rigState.infoMessages.unshift({time: new Date(), message: msg});
 	}
 };
 
