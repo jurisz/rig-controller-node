@@ -39,21 +39,21 @@ warningProcessor = (softRestartPossible) => {
 				log.info("Have warning state for %s mins, going to make soft restart", warningStateMins);
 				rigState.softRestartTime = new Date();
 				rigState.softRestartCount++;
-				rigState.addLogMessage("soft restart", rigWatchdog.gpuStats);
+				rigState.addLogMessage("soft restart", rigWatchdog.currentGpuStats);
 				softRestartRig();
 			} else {
 				log.info("Have warning state for %s mins, need to make hard restart", warningStateMins);
 				rigState.softRestartTime = null;
 				rigState.restartCount++;
 				rigState.restartedTime = new Date();
-				rigState.addLogMessage("hard restart", rigWatchdog.gpuStats);
+				rigState.addLogMessage("hard restart", rigWatchdog.currentGpuStats);
 				hardRestartRig();
 			}
 		}
 	} else {
 		rigState.warningStateCount++;
 		rigState.warningStartedTime = new Date();
-		rigState.addLogMessage("warning state", rigWatchdog.gpuStats);
+		rigState.addLogMessage("warning state", rigWatchdog.currentGpuStats);
 	}
 };
 
@@ -99,7 +99,7 @@ let claymoreSuccessHandler = data => {
 
 			if (gpuStats.length == rigState.GPU_COUNT) {
 				rigState.writeStats(gpuStats);
-				rigWatchdog.gpuStats = gpuStats;
+				rigWatchdog.currentGpuStats = gpuStats;
 			}
 		}
 	} catch (error) {

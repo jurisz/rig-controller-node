@@ -91,7 +91,10 @@ let rigState = {
 		if (rigState.infoMessages.length > 30) {
 			rigState.infoMessages.pop();
 		}
-		let msg = message + ' ' + JSON.stringify(gpuStats);
+		let msg = message;
+		if (gpuStats.length === rigState.GPU_COUNT) {
+			msg += ' ' + JSON.stringify(gpuStats);
+		}
 		rigState.infoMessages.unshift({time: new Date(), message: msg});
 	}
 };
