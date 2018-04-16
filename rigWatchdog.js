@@ -70,7 +70,6 @@ let claymoreErrorHandler = () => {
 let claymoreSuccessHandler = data => {
 	let stateOk = false;
 	let gpuStats = [];
-	rigWatchdog.currentGpuStats = [];
 	try {
 		let jsonRpc = JSON.parse(data.toString());
 		let hashRates = jsonRpc.result[3].split(';');
@@ -115,6 +114,7 @@ let claymoreSuccessHandler = data => {
 };
 
 rigWatchdog.process = () => {
+	rigWatchdog.currentGpuStats = [];
 	function isInRestartState() {
 		if (rigState.restartedTime) {
 			return Math.round((new Date() - rigState.restartedTime) / MILIS_IN_MIN) <= rigState.POWER_OFF_MINUTES * 2;
